@@ -1,7 +1,7 @@
 @charset "utf-8";
 .success .window-content,.window-container .window-content{padding: 20px 5%;border-bottom: 1px solid #bdbdbd;}
 .success p,.window-container .window-content p{font-size: 14px;color:#676767;line-height: 24px;text-align: center;}
-.window-btn button{display: block;height: 40px;width: 50%;text-align: center;line-height: 40px;font-size: 16px;font-weight: bold;color:#363636;}
+.window-btn button{height: 40px;width: 50%;text-align: center;line-height: 40px;font-size: 16px;font-weight: bold;color:#363636;}
 .window-btn .confirm-button{color:#d6a41f;}
 .window-container h2{text-align: center;font-size: 16px;font-weight: bold;color:#363636;padding-top: 22px;display: none;}
 .window-btn .ack-button{display: none;height: 40px;width: 100%;text-align: center;line-height: 40px;font-size: 16px;font-weight: bold;color:#d6a41f;}
@@ -27,8 +27,8 @@
     text-align: center;
     color:#fff;
     position:relative;
-    padding:10px 20px;
-    padding-right:20px;
+    padding:10px ;
+    /*padding-right:20px;*/
     border-radius: 5px;
     box-shadow: inset 0px 1px 0px #9e8d84, 0px 5px 0px 0px #322620, 0px 10px 5px #999;
     margin: 1px 2px 30px 4px;

@@ -26,7 +26,7 @@ AmazonsChessGame.prototype=new G();
 //设置AmazonsChessGame的原型属性
 AmazonsChessGame.prototype.direction=new Array();//方向
 AmazonsChessGame.prototype.area=new Array();//棋子移动范围
-
+AmazonsChessGame.prototype.obstacle=new Point();
 
 //更改ChessGame中的xum，ynum
 AmazonsChessGame.prototype.xnum=10;
@@ -134,6 +134,7 @@ AmazonsChessGame.prototype.AddDrawOperation=function(){
 AmazonsChessGame.prototype.PutObstacle=function(tempx,tempy) {
     this.Map[tempx][tempy]=-2;
     this.Draw();
+    this.obstacle=new Point(tempx,tempy);
     this.IsStep=true;
 }
 //棋子的移动范围
@@ -160,7 +161,9 @@ AmazonsChessGame.prototype.ChessArea=function(chess){
     }
     chess.area=deepClone(this.area);
 }
-
+AmazonsChessGame.prototype.AddHistory=function(){
+    this.history.push(this.obstacle);
+}
 AmazonsChessGame.prototype.GameOver=function () {
     var whitedeadchess=0;
     var blackdeadchess=0;

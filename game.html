@@ -10,23 +10,26 @@
 <script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;};</script>
 <script type="text/javascript" src="renderer/public/button.js"></script>
 <script type="text/javascript" src="renderer/public/windowOpen.js"></script>
+<script type="text/javascript" src="renderer/public/file.js"></script>
 <p class="time" id = "myTime">00:00:00</p>
 <div style="margin:0 auto;text-align: center;float: left;" id="container">
     <canvas id="myCanvas"></canvas>
 </div>
 <div style="text-align: center;" class="button">
-    <input type="button" class="func_button" value="开始游戏" id="startbtn" onclick="InitGame()"><br>
-    <input type="button" class="func_button" value="重新开始" id="restartbtn" onclick="ResetGame()"><br>
-    <input type="button" class="func_button" value="&nbsp;&nbsp;&nbsp;悔棋&nbsp;&nbsp;&nbsp;" id="retractbtn" onclick="WithDraw()"><br>
-    <input type="button" class="func_button" value="读取棋盘" id="readbtn" onclick="WithDraw()"><br>
-    <input type="button" class="func_button" value="返回主页" id="return" onclick="window.location.href='index.html'"><br>
+    <input type="button" class="func_button" value="  Start Game  " id="startbtn" onclick="InitGame()"><br>
+    <input type="button" class="func_button" value="Restart Game" id="restartbtn" onclick="ResetGame()"><br>
+    <input type="button" class="func_button" value="  With Draw   " id="retractbtn" onclick="WithDraw()"><br>
+    <input type="button" class="func_button" value=" Read Boards " id="readbtn" onclick="GetBoards()"><br>
+    <input type="button" class="func_button" value="     Return      " id="return" onclick="window.location.href='index.html'"><br>
+    黑方用时：<p id="blackTime">00:00:00</p>
+    白方用时：<p id="whiteTime">00:00:00</p>
+
 
 </div>
 <script type="text/javascript" src="renderer/public/chess.js"></script>
 <script type="text/javascript" src="renderer/public/game.js"></script>
-<!--<script type="text/javascript" src="renderer/Surakarta/DoublyList.js"></script>-->
-<!--<script type="text/javascript" src="renderer/Surakarta/ChessGame.js"></script>-->
 <script  type="text/javascript">
+    InitType();
     function parseUrl(){
         var url=location.href;
         var i=url.indexOf('?');
@@ -60,7 +63,6 @@
     }
     var arr=parseUrl();
     addScript(arr['type']);
-    console.log(arr['type']);
 </script>
 </body>
 </html>
