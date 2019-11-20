@@ -22,19 +22,13 @@
 		//点击按钮关闭弹窗
 		$('.cancel-button,.confirm-button').on('click',function(){
             let playerColor = this.textContent;
-            if(playerColor=='Black'){
-                game.LocalPlayer=BLACKPLAYER;
-                if(game.GameType==2){
-                    game.AIPlayer=WHITEPLAYER;
-                }
+            if(playerColor==='Black'){
+                game.Player=BLACKPLAYER;
+
 			}else{
-                game.LocalPlayer=WHITEPLAYER;
-                if(game.GameType==2){
-                    game.AIPlayer=BLACKPLAYER;
-                }
+                game.Player=WHITEPLAYER;
             }
 			closeWindow();
-            StartTime();
 		});
 		//设置蒙版展示
 		modal = new Modal();
@@ -81,6 +75,46 @@
         modal = new TypeModal();
         modal.setTitle(setTitle);
         modal.setContents(setContents);
+        modal.setButton(setButton);
+        $oMasking.show();
+        //设置弹窗面板展示
+        $oWindowContainer.show();
+    }
+
+    $.fn.openLogin = function(setTitle,setButton){
+        //拼接弹窗内容，并且在调用打开弹窗方法时将内容塞进body
+        var _html ='<div class="window-masking"></div>'+
+            '<div class="window-container fix" id="addNew">'+
+            '<h2></h2>'+
+            '<div class="window-content">'+
+            '<p class="window-text">' +
+            '用户名：<input type="text" name="username" id="username" style="width:120px"><br></br>'+
+            '用户id：<input type="text" name="userid" id="userid" style="width:120px">'+
+            '</p>'+
+            '</div>'+
+            '<div class="window-btn fix">'+
+            '<button class="cancel-button fl"></button>'+
+            '<button class="confirm-button fr"></button>'+
+            '</div>'+
+            '</div>';
+        //将拼接好的html塞进body里面
+        $('body').append(_html);
+        $oMasking = $('.window-masking');
+        $oWindowContainer = $('.window-container');
+        //点击按钮关闭弹窗
+        $('.cancel-button,.confirm-button').on('click',function(){
+            let username = document.getElementById('username').value;
+            let userid = document.getElementById('userid').value;
+            var usermsg={
+                username:username,
+                userid:userid
+            };
+            socket.send(JSON.stringify(usermsg));
+            closeWindow();
+        });
+        //设置蒙版展示
+        modal = new Modal();
+        modal.setTitle(setTitle);
         modal.setButton(setButton);
         $oMasking.show();
         //设置弹窗面板展示
@@ -142,5 +176,3 @@
         }
     }
 	})()
-
-

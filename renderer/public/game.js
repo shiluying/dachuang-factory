@@ -13,20 +13,20 @@ function ChessGame(){
     this.blacksecond=0;
     this.blackhour=0;
     //设置棋子及棋局
-    this.chess=new Array();
-    this.Map=new Array();
-    this.MapList = new Array();
+    this.chess=[];
+    this.Map=[];
+    this.MapList = [];
     this.LastChess=null;//用户上次指定的棋子
-    this.LocalPlayer=null;//记录下棋方
+    this.LocalPlayer=BLACKPLAYER;//记录下棋方
+    this.Player=BLACKPLAYER;//所属棋方
     this.GameType=1;//1-人人对弈；2-人机对弈；3-AI对弈
-    // this.BlackAIPlayer=null;
-    // this.WhiteAIPlayer=null;
     this.AIPlayer=null;
     this.ObstacleFlag=false;
     this.IsStep=false;
     //棋谱导出
-    this.history=new Array();
-    this.historyList=new Array();
+    this.history=[];
+    this.historyList=[];
+    this.step=[]
 }
 ChessGame.prototype.xnum=0;
 ChessGame.prototype.ynum=0;
@@ -34,16 +34,17 @@ ChessGame.prototype.rect=0;
 ChessGame.prototype.border=0;
 //初始化棋局和棋子
 ChessGame.prototype.initGame=function() {
-    this.MapList = new Array();
-    this.Map = new Array();
-    this.chess = new Array();
+    this.MapList = [];
+    this.Map = [];
+    this.chess = [];
     this.initMap();
     this.initChess();
     this.AddInitOperation();
     this.drawBoard();
     this.drawChess();
-    this.history=new Array();
-    this.historyList=new Array();
+    this.history=[];
+    this.historyList=[];
+    this.LocalPlayer=BLACKPLAYER;//记录下棋方
 }
 //绘制全部棋子
 ChessGame.prototype.drawChess=function(){
@@ -64,26 +65,24 @@ ChessGame.prototype.Draw=function(){
 }
 //调换下棋方
 ChessGame.prototype.reversePlayer=function () {
-    if(this.LocalPlayer==WHITEPLAYER){
+    if(this.LocalPlayer===WHITEPLAYER){
         this.LocalPlayer=BLACKPLAYER;
     }else{
         this.LocalPlayer=WHITEPLAYER;
     }
 }
 //判断是否为己方棋子
+/**
+ * @return {boolean}
+ */
 ChessGame.prototype.IsMyChess=function(c){
-    if((this.LocalPlayer==WHITEPLAYER&&c.player==1)||(this.LocalPlayer==BLACKPLAYER&&c.player==0)){
-        return true;
-    }
-    else{
-        return false;
-    }
+    return (this.LocalPlayer === WHITEPLAYER && c.player === 1) || (this.LocalPlayer === BLACKPLAYER && c.player === 0);
 }
 //创建棋子布局数组Map
 ChessGame.prototype.initMap=function(){
-    this.Map=new Array();
+    this.Map=[];
     for(var x=0;x<this.xnum;x++) {
-        var temp = new Array();
+        var temp = [];
         for (var y = 0; y < this.ynum; y++) {
             temp.push(-1);
         }
@@ -107,13 +106,12 @@ ChessGame.prototype.MoveChess=function(tempx,tempy){
     this.history.push(new Point(x1,y1));
     this.history.push(new Point(x2,y2));
     this.Draw();
-}
+};
 ChessGame.prototype.stageClick=function(event){
-
     //目标处没棋子点击棋子
     var tempx,tempy;
     //人人对弈
-    if(this.GameType==1){
+    if(this.GameType===1){
         tempx=parseInt(Math.floor((event.offsetX-this.border+this.rect/2)/this.rect));
         tempy=parseInt(Math.floor((event.offsetY-this.border+this.rect/2)/this.rect));
         //防止超出范围
@@ -121,9 +119,10 @@ ChessGame.prototype.stageClick=function(event){
             return;
         }
         this.PlayGame(tempx,tempy);
+        this.OverStep();
     }
     //人机对弈
-    else if(this.GameType==2 && this.LocalPlayer!=this.AIPlayer){
+    else if(this.GameType===2 && this.LocalPlayer!==this.AIPlayer){
         tempx=parseInt(Math.floor((event.offsetX-this.border+this.rect/2)/this.rect));
         tempy=parseInt(Math.floor((event.offsetY-this.border+this.rect/2)/this.rect));
         //防止超出范围
@@ -131,59 +130,54 @@ ChessGame.prototype.stageClick=function(event){
             return;
         }
         this.PlayGame(tempx,tempy);
+        this.OverStep();
     }
-    this.OverStep();
-    return
-}
+};
 ChessGame.prototype.OverStep=function(){
     if(this.IsStep){
         this.AddHistory();
-        this.historyList.push(this.history);
-        this.history=new Array();
         this.IsStep=false;
         this.ObstacleFlag=false;
         this.MapList.push(deepClone(this.Map));
-        this.reversePlayer();//改变玩家角色
+        SendData(this.history);//发送数据
+        this.historyList.push(this.history);
+        this.history=[];
         this.LastChess=null;
         if(this.GameOver()){
             alert("比赛结束");
         }
-        if(this.GameType==2){//人机对弈
-            this.GetAIData();
-            this.reversePlayer();
-        }
+        this.reversePlayer();//改变玩家角色
     }
-}
-ChessGame.prototype.GetWhiteData=function(){
+};
 
-}
-ChessGame.prototype.GetBlackData=function(){
+/**
+ * @return {boolean}
+ */
+ChessGame.prototype.PlayGame=function(tempx,tempy) {
 
-}
-Chess.prototype.GetAIData=function(){
-
-}
-
-ChessGame.prototype.PlayGame=function(tempx,tempy){
-    if(this.GameType!=1&&this.MapList.length<=1&&this.LocalPlayer!=BLACKPLAYER){
-        return
-    }
+    // if (this.MapList.length <= 1 && this.LocalPlayer !== BLACKPLAYER) {
+    //     return
+    // }
     //首次选择棋子
-    if(this.LastChess==null){
-        if(this.Map[tempx][tempy]>=0){//当前位置有棋子
-            var c=this.chess[this.Map[tempx][tempy]];
+    if (this.LastChess == null) {
+        if (this.Map[tempx][tempy] >= 0) {//当前位置有棋子
+            var c = this.chess[this.Map[tempx][tempy]];
             //判断是否为选择方棋子
-            if(!this.IsMyChess(c)){
+            if (!this.IsMyChess(c)) {
                 alert("请选择自己的棋子");
-            }else {
-                this.LastChess=this.chess[this.Map[tempx][tempy]];
+            } else {
+                this.LastChess = this.chess[this.Map[tempx][tempy]];
                 this.LastChess.drawSelectedChess(ctx);
                 this.ChessArea(this.LastChess);
                 this.LastChess.showArea(ctx);
-                this.ObstacleFlag=false;
+                this.ObstacleFlag = false;
             }
         }
-    }else {//之前选择过棋子
+        // else if(this.LocalPlayer===this.AIPlayer){//AI棋子选择错误
+        //     console.log("AI棋子选择错误");
+        //     return false;
+        // }
+    } else {//之前选择过棋子
         if (this.Map[tempx][tempy] >= 0) {//当前位置有棋子
             var c = this.chess[this.Map[tempx][tempy]];
             if (this.ObstacleFlag) {//棋子已完成走子过程，不能更改选中棋子
@@ -197,77 +191,88 @@ ChessGame.prototype.PlayGame=function(tempx,tempy){
                 this.LastChess.showArea(ctx);
                 this.ObstacleFlag = false;
             } else {//当前位置为对方棋子
-                this.OpponentOperation(tempx,tempy);//若为吃子游戏，则重写该方法，若为置子游戏，不做操作
+                this.OpponentOperation(tempx, tempy);//若为吃子游戏，则重写该方法，若为置子游戏，不做操作
             }
         }
         else {//当前选择位置无棋子
-            if(this.ObstacleFlag){//完成走子，置放障碍
-                if(this.IsAbleToPut(tempx,tempy)){
-                    this.PutObstacle(tempx,tempy);
+            if (this.ObstacleFlag) {//完成走子，置放障碍
+                if (this.IsAbleToPut(tempx, tempy)) {
+                    this.PutObstacle(tempx, tempy);
                 }
-                else{
+                else {
                     alert("当前位置不符合下棋规则");
                 }
-            }else{
-                if(this.IsAbleToMove(tempx,tempy)){
-                    this.MoveChess(tempx,tempy);
+            } else {
+                if (this.IsAbleToMove(tempx, tempy)) {
+                    this.MoveChess(tempx, tempy);
                     this.AddOperation();
                 }
-                else{
+                else {
                     alert("当前位置不符合下棋规则");
                 }
             }
         }
     }
     this.OverStep();
-    return;
+};
+ChessGame.prototype.AIGame=function(data){
+    for(var i=0;i<data.length;i++){
+        this.PlayGame(data[i].x,data[i].y);
+    }
+
 }
 //初始化
 ChessGame.prototype.initChess=function(){
     //子类重写
-}
+};
 ChessGame.prototype.drawBoard=function(){
     //子类重写
-}
+};
 //判断是否符合走法
+/**
+ * @return {boolean}
+ */
 ChessGame.prototype. IsAbleToPut=function(firstchess,tempx,tempy){
     return false;
-}
+};
 //判断游戏是否结束
 ChessGame.prototype.GameOver=function(){
     //子类重写
-}
+};
 //目标位置有敌方棋子
 ChessGame.prototype.OpponentOperation=function (tempx,tempy) {
     alert("当前位置有对方棋子");
     //子类重写
-}
+};
 //置放障碍
 ChessGame.prototype.PutObstacle=function (tempx,tempy) {
     //子类重写
-}
+};
 //判断是否越界
+/**
+ * @return {boolean}
+ */
 ChessGame.prototype.IsBorder=function(tempx,tempy){
     if(tempx>=this.xnum||tempy>=this.ynum||tempx<0||tempy<0){
         return true;
     }else{
         return false;
     }
-}
+};
 ChessGame.prototype.AddOperation=function () {
 
-}
+};
 ChessGame.prototype.AddInitOperation=function () {
-}
+};
 ChessGame.prototype.AddDrawOperation=function () {
 
-}
+};
 ChessGame.prototype.ChessArea=function () {
 
-}
+};
 ChessGame.prototype.AddHistory=function(){
 
-}
+};
 //设置画布
 var mycanvas=document.getElementById("myCanvas");
 var ctx=mycanvas.getContext("2d");
@@ -279,13 +284,16 @@ function StopTime(){
 }
 //棋盘点击事件
 mycanvas.onclick=function(event){
+    if(game.LocalPlayer!==game.Player){
+        return;
+    }
     if(game.STARTGAME){
         game.stageClick(event);
     }
     else{
         alert("游戏尚未开始");
     }
-}
+};
 /*
 深度拷贝的实现
 */

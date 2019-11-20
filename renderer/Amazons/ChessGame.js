@@ -40,26 +40,26 @@ AmazonsChessGame.prototype.initChess=function(){
     var cn;//棋子名称
     //黑棋chess[0]-chess[3]，标号0-3
     for(var i=0;i<4;i++){
-        cn="黑"+i.toString();
+        cn="白"+i.toString();
         if(i<2){
-            c=new AmazonsChess(BLACKPLAYER,cn,new Point(i*3+3,0));
+            c=new AmazonsChess(WHITEPLAYER,cn,new Point(i*3+3,0));
             this.chess.push(c);
             this.Map[i*3+3][0]=i;
         }else{
-            c=new AmazonsChess(BLACKPLAYER,cn,new Point((i-2)*9,3));
+            c=new AmazonsChess(WHITEPLAYER,cn,new Point((i-2)*9,3));
             this.chess.push(c);
             this.Map[(i-2)*9][3]=i;
         }
     }
     //白棋chess[4]-[7]，标号4-7
     for(var i=0;i<4;i++){
-        cn="白"+i.toString();
+        cn="黑"+i.toString();
         if(i<2){
-            c=new AmazonsChess(WHITEPLAYER,cn,new Point(i*9,6));
+            c=new AmazonsChess(BLACKPLAYER,cn,new Point(i*9,6));
             this.chess.push(c);
             this.Map[i*9][6]=i+4;
         }else{
-            c=new AmazonsChess(WHITEPLAYER,cn,new Point((i-1)*3,9));
+            c=new AmazonsChess(BLACKPLAYER,cn,new Point((i-1)*3,9));
             this.chess.push(c);
             this.Map[(i-1)*3][9]=i+4;
         }

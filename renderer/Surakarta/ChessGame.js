@@ -41,26 +41,26 @@ SurakartaChessGame.prototype.initChess=function(){
     var cn;//棋子名称
     //黑棋chess[0]-chess[11]，标号0-11
     for(var i=0;i<12;i++){
-        cn="黑"+i.toString();
+        cn="白"+i.toString();
         if(i<6){
-            c=new SurakartaChess(BLACKPLAYER,cn,new Point(i,0));
+            c=new SurakartaChess(WHITEPLAYER,cn,new Point(i,0));
             this.chess.push(c);
             this.Map[i][0]=i;
         }else{
-            c=new SurakartaChess(BLACKPLAYER,cn,new Point(i-6,1));
+            c=new SurakartaChess(WHITEPLAYER,cn,new Point(i-6,1));
             this.chess.push(c);
             this.Map[i-6][1]=i;
         }
     }
     //白棋chess[12]-[23]，标号12-23
     for(var i=0;i<12;i++){
-        cn="白"+i.toString();
+        cn="黑"+i.toString();
         if(i<6){
-            c=new SurakartaChess(WHITEPLAYER,cn,new Point(i,4));
+            c=new SurakartaChess(BLACKPLAYER,cn,new Point(i,4));
             this.chess.push(c);
             this.Map[i][4]=i+12;
         }else{
-            c=new SurakartaChess(WHITEPLAYER,cn,new Point(i-6,5));
+            c=new SurakartaChess(BLACKPLAYER,cn,new Point(i-6,5));
             this.chess.push(c);
             this.Map[i-6][5]=i+12;
         }
@@ -200,9 +200,9 @@ SurakartaChessGame.prototype.IsAbleToEat=function(tempx,tempy){
                 if((this.checkChess(this.track[i].searchNodeAt(pos1[j]),tempx,tempy)))
                     return true;
             }
- 		}	
+ 		}
 	}
-	return false; 		
+	return false;
 }
 //判断棋子是否在轨道中
 SurakartaChessGame.prototype.searchChess=function(temp,x,y){
