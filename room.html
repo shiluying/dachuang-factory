@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>room</title>
+    <link rel="stylesheet" type="text/css" href="renderer/global.css">
+    <script type="text/javascript" src="renderer/public/jquery.js"></script>
+    <script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;};</script>
+    <script type="text/javascript" src="renderer/public/app.js"></script>
+</head>
+
+<body>
+<div class="room">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">
+                    添加房间
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    选择棋类：
+                    <select name="Type" id="type" required>
+                        <option value="amazons">amazons</option>
+                        <option value="surakarta">surakarta</option>
+                    </select>
+                    选择棋盘大小：
+                    <select name="args" id="args" required>
+                        <option value="[10,10]">[10,10]</option>
+                        <option value="[8,8]">[8,8]</option>
+                    </select>
+                    设置时间：
+                    <input type="text" id="time" name="time" placeholder="输入时间" required/>
+                    选择先后手：
+                    <select name="order" id="order" required>
+                        <option value="1">先手</option>
+                        <option value="2">后手</option>
+                    </select>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <!--<button type="button" class="btn btn-default"-->
+                <!--data-dismiss="modal">关闭-->
+                <!--</button>-->
+                <button type="button" class="" onclick="addroom()">
+                    添加房间
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<h4>房间列表</h4>
+<!--<button onclick="add()">添加房间</button>-->
+<table id="rooms">
+    <tbody>
+    <tr>
+    <th>房间号</th>
+        <th>操作</th>
+        <th>类型</th>
+    </tr>
+    <tr>
+        <!--<td id='roomid'>1</td>-->
+        <!--<td><button  onclick='join(this)'>加入房间</button></td>-->
+    </tr>
+    </tbody>
+</table>
+<input type="button" class="" value="     Return " onclick="window.location.href='index.html'"><br>
+</div>
+<div class="game-room hide">
+    <p class="time" id = "myTime">00:00:00</p>
+    <div style="margin:0 auto;text-align: center;float: left;" id="container">
+        <canvas id="myCanvas"></canvas>
+    </div>
+    <div style="text-align: center;" class="button">
+        <input type="button" class="func_button" value="  Start Game  " id="startbtn" onclick="InitGame(order)"><br>
+        <input type="button" class="func_button" value="Restart Game" id="restartbtn" onclick="ResetGame()"><br>
+        <input type="button" class="func_button" value="  With Draw   " id="retractbtn" onclick="WithDraw()"><br>
+        <input type="button" class="func_button" value=" Read Boards " id="readbtn" onclick="GetBoards()"><br>
+        <input type="button" class="func_button" value="     Return      " id="return" onclick="returnRoom()"><br>
+        白方用时：<p id="whiteTime">00:00:00</p>
+        黑方用时：<p id="blackTime">00:00:00</p>
+    </div>
+
+    <script type="text/javascript" src="renderer/public/chess.js"></script>
+    <script type="text/javascript" src="renderer/public/game.js"></script>
+    <script type="text/javascript" src="renderer/public/windowOpen.js"></script>
+    <script type="text/javascript" src="renderer/public/button.js"></script>
+    <script type="text/javascript" src="renderer/public/file.js"></script>
+
+    <script  type="text/javascript">
+        function returnRoom() {
+            $('.game-room').removeClass('active').removeClass('show').addClass('hide');
+            $('.room').removeClass('hide').addClass('active').addClass('show');
+        }
+        function parseUrl(){
+            var url=location.href;
+            var i=url.indexOf('?');
+            if(i==-1)return;
+            var querystr=url.substr(i+1);
+            var arr1=querystr.split('&');
+            var arr2=new Object();
+            for  (i in arr1){
+                var ta=arr1[i].split('=');
+                arr2[ta[0]]=ta[1];
+            }
+            return arr2;
+        }
+        function addScript(type) {
+            if("Surakarta"==type){
+                var script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = "renderer/Surakarta/DoublyList.js";
+                document.body.appendChild(script);
+                script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = "renderer/Surakarta/ChessGame.js";
+                document.body.appendChild(script);
+            }else if("Amazons"==type){
+                var script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = "renderer/Amazons/ChessGame.js";
+                document.body.appendChild(script);
+            }
+        }
+        var arr=parseUrl();
+        var order = arr['order'];
+        addScript(arr['type']);
+    </script>
+</div>
+
+
+<script>
+    function ShowTable(room_list) {
+        for(var i=0;i<room_list.length;i++){
+            AddRoomTable(room_list[i].id,room_list[i].type);
+        }
+    }
+    function AddRoomTable(roomid,type){
+        var tab=document.getElementById("rooms"); //获得表格
+        //表格当前的行数
+        var num=document.getElementById("rooms").rows.length;
+        var rownum=num;
+        tab.insertRow(rownum);
+        for(var i=0;i<3; i++)
+        {
+            tab.rows[rownum].insertCell(i);
+            if(i==0){
+                tab.rows[rownum].cells[i].innerHTML="<td id='roomid'>"+roomid+"</td>";
+            }else if(i===1){
+                tab.rows[rownum].cells[i].innerHTML="<td><button onclick='join(this)'>加入房间</button>";
+            }else{
+                tab.rows[rownum].cells[i].innerHTML="<td id='type'>"+type+"</td>";
+        }
+        }
+    }
+    function join(obj) {
+        var $td = $(obj).parents('tr').children('td');
+        var room_id = $td.eq(0).text();
+        JoinRoom(room_id);
+    }
+    function addroom() {
+        var type=$("#type").val();
+        var args= $("#args").val();
+        var time= $("#time").text();
+        var order= $("#order").val();
+        if(args==="[10,10]"){
+            args=[10,10];
+        }
+        else if(args==="[8,8]"){
+            args=[8,8]
+        }
+        AddRoom(type,args,time,order);//发送给服务端
+    }
+</script>
+</body>
+</html>

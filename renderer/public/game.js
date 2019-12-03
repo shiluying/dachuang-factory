@@ -1,5 +1,6 @@
 //游戏逻辑类
 function ChessGame(){
+    this.gametype=null;
     this.STARTGAME = false;
     //设置时间
     this.time = 0;
@@ -108,12 +109,14 @@ ChessGame.prototype.MoveChess=function(tempx,tempy){
     this.Draw();
 };
 ChessGame.prototype.stageClick=function(event){
+    console.log(event.offsetX,event.offsetY);
     //目标处没棋子点击棋子
     var tempx,tempy;
     //人人对弈
     if(this.GameType===1){
         tempx=parseInt(Math.floor((event.offsetX-this.border+this.rect/2)/this.rect));
         tempy=parseInt(Math.floor((event.offsetY-this.border+this.rect/2)/this.rect));
+        console.log(tempx,tempy);
         //防止超出范围
         if(tempx>=this.xnum||tempy>=this.ynum||tempx<0||tempy<0){
             return;
@@ -139,7 +142,9 @@ ChessGame.prototype.OverStep=function(){
         this.IsStep=false;
         this.ObstacleFlag=false;
         this.MapList.push(deepClone(this.Map));
-        SendData(this.history);//发送数据
+        if(game.Player===game.LocalPlayer){
+            SendData(this.history);//发送数据
+        }
         this.historyList.push(this.history);
         this.history=[];
         this.LastChess=null;
@@ -154,6 +159,8 @@ ChessGame.prototype.OverStep=function(){
  * @return {boolean}
  */
 ChessGame.prototype.PlayGame=function(tempx,tempy) {
+    console.log(tempx,tempy);
+    console.log(this.Map);
 
     // if (this.MapList.length <= 1 && this.LocalPlayer !== BLACKPLAYER) {
     //     return
@@ -216,10 +223,24 @@ ChessGame.prototype.PlayGame=function(tempx,tempy) {
     this.OverStep();
 };
 ChessGame.prototype.AIGame=function(data){
-    for(var i=0;i<data.length;i++){
-        this.PlayGame(data[i].x,data[i].y);
+    console.log(data);
+    var kw = data.kw;
+    if(kw===0){//置放棋子
+        var pos1 = new Point();
+        pos1.x=data.move.from[1];
+        pos1.y=data.move.from[0];
+        var pos2 = new Point();
+        pos2.x=data.move.to[1];
+        pos2.y = data.move.to[0];
+        this.PlayGame(pos1.x,pos1.y);
+        this.PlayGame(pos2.x,pos2.y);
     }
-
+    else if(kw===1){//置放障碍
+        var pos3 = new Point();
+        pos3.x=data.move.to[1];
+        pos3.y = data.move.to[0];
+        this.PlayGame(pos3.x,pos3.y);
+    }
 }
 //初始化
 ChessGame.prototype.initChess=function(){
@@ -288,6 +309,7 @@ mycanvas.onclick=function(event){
         return;
     }
     if(game.STARTGAME){
+        console.log("start game,start move");
         game.stageClick(event);
     }
     else{

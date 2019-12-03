@@ -309,6 +309,7 @@ SurakartaChessGame.prototype.GameOver=function(){
 
 //创建游戏对象
 var game=new SurakartaChessGame();
+game.GameType=1;
 //加载页面时初始化棋局
 window.onload=function(){
     game.initGame();

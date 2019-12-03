@@ -33,5 +33,11 @@
     box-shadow: inset 0px 1px 0px #9e8d84, 0px 5px 0px 0px #322620, 0px 10px 5px #999;
     margin: 1px 2px 30px 4px;
 }
+.hide{
+    display: none;
+}
+.show{
+    display: block;
+}
 
 

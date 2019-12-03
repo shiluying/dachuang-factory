@@ -38,7 +38,7 @@ AmazonsChessGame.prototype.border=AmazonsChess.prototype.border;
 AmazonsChessGame.prototype.initChess=function(){
     var c;//棋子
     var cn;//棋子名称
-    //黑棋chess[0]-chess[3]，标号0-3
+    //白棋chess[0]-chess[3]，标号0-3
     for(var i=0;i<4;i++){
         cn="白"+i.toString();
         if(i<2){
@@ -51,7 +51,7 @@ AmazonsChessGame.prototype.initChess=function(){
             this.Map[(i-2)*9][3]=i;
         }
     }
-    //白棋chess[4]-[7]，标号4-7
+    //黑棋chess[4]-[7]，标号4-7
     for(var i=0;i<4;i++){
         cn="黑"+i.toString();
         if(i<2){
@@ -185,6 +185,7 @@ AmazonsChessGame.prototype.GameOver=function () {
 }
 //创建游戏对象
 var game=new AmazonsChessGame();
+game.GameType=1;
 //加载页面时初始化棋局
 window.onload=function(){
     game.initGame();

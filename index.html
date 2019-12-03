@@ -4,35 +4,20 @@
     <meta charset="UTF-8">
     <title>Index</title>
     <link href="style.css" rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="renderer/global.css">
 </head>
-<!-- <body>
-选择棋种
-<input type="button" onclick="window.location.href='game.html?type=Amazons'" value="亚马逊棋">
-<input type="button" onclick="window.location.href='game.html?type=Surakarta'" value="苏拉卡尔塔棋">
-</body> -->
 <body>
-    <!-----start-main---->
-    <div class="main">
+    <div class="index">
       <div class="login-form">
         <h1>Choose Chess Type</h1>
         <br>
         <br>
           <div class="button">
-            <input type="button" onclick="window.location.href='game.html?type=Amazons'" value="Amazons">
-            <input type="button" onclick="window.location.href='game.html?type=Surakarta'" value="Surakarta">
+            <input type="button" onclick="window.location.href='room.html?type=Amazons'" value="Amazons">
+            <input type="button" onclick="window.location.href='room.html?type=Surakarta'" value="Surakarta">
+            <!--<input type="button" onclick="window.location.href='room.html'" value="Room">-->
           </div>
       </div>
     </div>
-      <!--//End-login-form-->
-      <!-----start-copyright---->
     </body>
-<!--<script>-->
-    <!--var io  = require("socket.io-client");-->
-    <!--var socket = io('http://192.168.199.155:5000');-->
-    <!--socket.on('news', function (data) {-->
-        <!--console.log("aaa");-->
-        <!--console.log(data);-->
-        <!--socket.emit('hello', { my: 'data' });-->
-    <!--});-->
-<!--</script>-->
 </html>

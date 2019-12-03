@@ -1,12 +1,21 @@
-function InitGame(){
+var order=null;
+function setOrder(or) {
+    order=or;
+}
+function InitGame(order){
+    console.log("所属方："+order);
     var btnVal=document.getElementById("startbtn");
-
     if (btnVal.value == "  Start Game  ") {
-        setTitle = 'Please choose the color of the chess';
-        setContents = 'Black means first hand, the other side chooses the color opposite to your persistence';
-        setButton = '["Black","White"]';
-        $(this).openWindow(setTitle, setContents, setButton);
-        SendStart();
+        if(order==='1'){
+            game.Player=BLACKPLAYER;
+        }else{
+            game.Player=WHITEPLAYER;
+        }
+        // setTitle = 'Please choose the color of the chess';
+        // setContents = 'Black means first hand, the other side chooses the color opposite to your persistence';
+        // setButton = '["Black","White"]';
+        // $(this).openWindow(setTitle, setContents, setButton);
+        SendStart(order);
         // btnVal.value = "  Stop Game  ";
     } else if (btnVal.value == "  Stop Game  ") {
         clearTimeout(game.time);
@@ -26,17 +35,12 @@ function InitType() {
     setButton = '["人人对弈","人机对弈","AI对弈"]';
     $(this).chooseType(setTitle, setContents, setButton);
 }
-function Login(){
-    let setTitle;
-    let setButton;
-    setTitle = '登录';
-    setButton = '["确认","取消"]';
-    $(this).openLogin(setTitle, setButton);
-}
+
 //初始化游戏
 function StarGame(){
     game.STARTGAME=true;
     StartTime();
+
 }
 function StartTime(){
     clearTimeout(game.time);
@@ -83,7 +87,7 @@ function WithDraw(){
 	}
 	//改变棋局历史
     game.historyList.pop();
-    console.log(game.historyList);
+    RollBack();
 	game.Draw();
 	game.reversePlayer();
 }
