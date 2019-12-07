@@ -225,7 +225,9 @@ ChessGame.prototype.PlayGame=function(tempx,tempy) {
 ChessGame.prototype.AIGame=function(data){
     console.log(data);
     var kw = data.kw;
+    console.log(kw);
     if(kw===0){//置放棋子
+        console.log('here');
         var pos1 = new Point();
         pos1.x=data.move.from[1];
         pos1.y=data.move.from[0];
