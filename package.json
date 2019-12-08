@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "socket.io": "^2.2.0",
-    "soket.io": "0.0.1-security"
+    "soket.io": "0.0.1-security",
+    "ws": "^7.2.0"
   }
 }
