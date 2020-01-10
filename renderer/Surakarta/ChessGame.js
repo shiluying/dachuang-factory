@@ -26,14 +26,14 @@ SurakartaChessGame.prototype.passArc=false;//是否经过圆弧
 SurakartaChessGame.prototype.track=new Array();//存储两轨道坐标数据
 SurakartaChessGame.prototype.arclist=new Array();//存储圆弧坐标数据
 
-//更改ChessGame中的xum，ynum
+//设置ChessGame中的xum，ynum
 SurakartaChessGame.prototype.xnum=6;
 SurakartaChessGame.prototype.ynum=6;
 SurakartaChessGame.prototype.rect=SurakartaChess.prototype.rect;
 SurakartaChessGame.prototype.border=SurakartaChess.prototype.border;
 
 
-SurakartaChessGame.prototype.area=new Array();//棋子移动范围
+// SurakartaChessGame.prototype.area=new Array();//棋子移动范围
 
 //初始化棋子,重写父类方法
 SurakartaChessGame.prototype.initChess=function(){
@@ -153,13 +153,17 @@ SurakartaChessGame.prototype.OpponentOperation=function(tempx,tempy){
 	}
     this.passArc=false;
 }
-SurakartaChessGame.prototype.AddOperation=function(){
-    this.IsStep=true;
-    this.LastChess.showArea(ctx);
-}
-SurakartaChessGame.prototype.chessArea=function(){
-
-}
+//目标位置为空白
+SurakartaChessGame.prototype.BlankOperation=function(tempx,tempy){
+    if (this.IsAbleToMove(tempx, tempy)) {
+        this.MoveChess(tempx, tempy);
+        this.IsStep=true;
+        // this.LastChess.showArea(ctx);
+    }
+    else {
+        alert("当前位置不符合移动棋子的规则");
+    }
+};
 //判断是否符合走法
 SurakartaChessGame.prototype.IsAbleToMove=function(tempx,tempy){
 	var x1,y1;//被单击棋子在棋盘上的原坐标

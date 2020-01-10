@@ -52,7 +52,6 @@ socket.onmessage = function (event) {
     reader.onload = () => {
         data = reader.result;
         data = JSON.parse(data);
-        console.log(data.mesg);
         if (data.mesg === 'move') {//移动
             game.AIGame(data);
             data.playerId = player;
@@ -62,20 +61,15 @@ socket.onmessage = function (event) {
             console.log(data);
             // var order=data.order;
             var type = data.type;
-            player = data.playerId
-            console.log(type);
+            player = data.playerId;
             //逻辑结构
             setOrder(data.order);
             $('.room').removeClass('active').removeClass('show').addClass('hide');
             $('.game-room').removeClass('hide').addClass('active').addClass('show');
         }
         else if (data.mesg === 'join') {//加入房间
-            console.log(data);
-            // var room_id=data;
-            // var order=data.order;
             var type = data.type;
-            player = data.playerId
-            console.log(type);
+            player = data.playerId;
             //逻辑结构
             setOrder(data.order);
             $('.room').removeClass('active').removeClass('show').addClass('hide');
@@ -84,7 +78,6 @@ socket.onmessage = function (event) {
         }
         else if (data.mesg === 'room_list') {//连接成功返回房间列表
             var room_list = data.room_list;
-            console.log(room_list);
             ShowTable(room_list);
         }
         else if (data.mesg === 'start') {
@@ -93,11 +86,9 @@ socket.onmessage = function (event) {
             btnVal.value = "  Stop Game  ";
             notifyClient('start');
         }
-        //..
     };
     reader.readAsText(event.data);
-
-}
+};
 
 //添加房间
 function AddRoom(type, args, time, order) {
@@ -139,17 +130,18 @@ function SendData(data) {
         kw: 0
     };
     socket.send(JSON.stringify(sendData));
-    console.log(sendData);
-    var sendData = {
-        mesg: 'move',
-        location: {
-            'from': [data[1].y, data[1].x],
-            'to': [data[2].y, data[2].x]
-        },
-        kw: 1
+    if(data.length===3){
+        var sendData = {
+            mesg: 'move',
+            location: {
+                'from': [data[1].y, data[1].x],
+                'to': [data[2].y, data[2].x]
+            },
+            kw: 1
+        }
+        socket.send(JSON.stringify(sendData));
     }
-    console.log(sendData);
-    socket.send(JSON.stringify(sendData));
+
 }
 
 function RollBack(data) {

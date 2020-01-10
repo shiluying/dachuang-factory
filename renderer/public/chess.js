@@ -12,6 +12,7 @@ function Chess(player,chessName,position){
     this.player=player;
     this.chessName=chessName;//黑0-11，红12-23
     this.pos=position;//棋子在棋盘中的位置
+    //棋子在画布上的位置
     this.x=this.pos.x*this.rect+this.border;
     this.y=this.pos.y*this.rect+this.border;
     this.area=new Array();//可行走范围
@@ -21,8 +22,10 @@ Chess.prototype.border=0;//棋子边界值
 Chess.prototype.selctShape="circular"//设置选中时边框的样式(circular/Square)，默认为圆形
 //棋子在棋盘中的具体位置
 Chess.prototype.setPosition=function(x,y){
+    //棋盘坐标
     this.pos.x=x;
     this.pos.y=y;
+    //画布坐标
     //坐标换算
     this.x=Math.floor(this.pos.x*this.rect+this.border);
     this.y=Math.floor(this.pos.y*this.rect+this.border);

@@ -12,7 +12,7 @@ AmazonsChess.prototype=new F();
 AmazonsChess.prototype.border=30;
 AmazonsChess.prototype.rect=60;
 AmazonsChess.prototype.selctShape="circular";
-AmazonsChess.prototype.obstacle=new Array();
+AmazonsChess.prototype.obstacle=new Array();//障碍列表
 
 
 //chessgame寄生组合式继承
@@ -26,7 +26,7 @@ AmazonsChessGame.prototype=new G();
 //设置AmazonsChessGame的原型属性
 AmazonsChessGame.prototype.direction=new Array();//方向
 AmazonsChessGame.prototype.area=new Array();//棋子移动范围
-AmazonsChessGame.prototype.obstacle=new Point();
+AmazonsChessGame.prototype.obstacle=new Point();//当前释放的障碍坐标
 
 //更改ChessGame中的xum，ynum
 AmazonsChessGame.prototype.xnum=10;
@@ -100,25 +100,45 @@ AmazonsChessGame.prototype.drawBoard=function(){
         off = !off;
     }
 }
-AmazonsChessGame.prototype.AddOperation=function(){
-    this.ObstacleFlag=true;
-    this.ChessArea(this.LastChess);
-    this.LastChess.showArea(ctx);
-}
+//目标位置为空白
+AmazonsChessGame.prototype.BlankOperation=function(tempx,tempy){
+    if (this.ObstacleFlag) {//完成走子，置放障碍
+        if (this.IsAbleToPut(tempx, tempy)) {
+            this.PutObstacle(tempx, tempy);
+            this.history.push(this.obstacle);
+            this.IsStep=true;
+        }
+        else {
+            alert("当前位置不符合释放障碍的规则");
+        }
+    } else {//未完成走子，进行走子
+        if (this.IsAbleToMove(tempx, tempy)) {
+            this.MoveChess(tempx, tempy);
+            this.ObstacleFlag=true;
+            this.ChessArea(this.LastChess);//棋子的移动范围
+            this.LastChess.showArea(ctx);
+        }
+        else {
+            alert("当前位置不符合移动棋子的规则");
+        }
+    }
+};
+//判断是否可以置放障碍
 AmazonsChessGame.prototype.IsAbleToPut=function(tempx,tempy) {
     for(var i=0;i<this.LastChess.area.length;i++){
         if(tempx == this.LastChess.area[i].x&&tempy == this.LastChess.area[i].y)
             return true
     }
     return false
-}
+};
+//判断棋子是否可以移动
 AmazonsChessGame.prototype.IsAbleToMove=function(tempx,tempy) {
     for(var i=0;i<this.LastChess.area.length;i++){
         if(tempx == this.LastChess.area[i].x&&tempy == this.LastChess.area[i].y)
             return true
     }
     return false
-}
+};
 AmazonsChessGame.prototype.AddDrawOperation=function(){
     for(var i=0;i<this.xnum;i++)
         for(var j=0;j<this.ynum;j++)
@@ -130,12 +150,11 @@ AmazonsChessGame.prototype.AddDrawOperation=function(){
                 ctx.closePath();
             }
 }
-//绘制障碍
+//置放障碍
 AmazonsChessGame.prototype.PutObstacle=function(tempx,tempy) {
     this.Map[tempx][tempy]=-2;
     this.Draw();
     this.obstacle=new Point(tempx,tempy);
-    this.IsStep=true;
 }
 //棋子的移动范围
 AmazonsChessGame.prototype.ChessArea=function(chess){
@@ -160,9 +179,6 @@ AmazonsChessGame.prototype.ChessArea=function(chess){
         }
     }
     chess.area=deepClone(this.area);
-}
-AmazonsChessGame.prototype.AddHistory=function(){
-    this.history.push(this.obstacle);
 }
 AmazonsChessGame.prototype.GameOver=function () {
     var whitedeadchess=0;

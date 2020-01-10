@@ -21,7 +21,6 @@ function ChessGame(){
     this.LocalPlayer=BLACKPLAYER;//记录下棋方
     this.Player=BLACKPLAYER;//所属棋方
     this.GameType=1;//1-人人对弈；2-人机对弈；3-AI对弈
-    this.AIPlayer=null;
     this.ObstacleFlag=false;
     this.IsStep=false;
     //棋谱导出
@@ -92,7 +91,7 @@ ChessGame.prototype.initMap=function(){
 }
 //移动棋子
 ChessGame.prototype.MoveChess=function(tempx,tempy){
-    var id1,id2;//保存第一次和第二次被单击棋子的索引号
+    var id1;//保存被单击棋子的索引号
     var x1,y1;//第一次被单击棋子在棋盘上的原坐标
     x1=this.LastChess.pos.x;
     y1=this.LastChess.pos.y;
@@ -100,7 +99,6 @@ ChessGame.prototype.MoveChess=function(tempx,tempy){
     x2=tempx;
     y2=tempy;
     id1=this.Map[x1][y1];
-    id2=this.Map[x2][y2];
     this.Map[x1][y1]=-1;
     this.Map[x2][y2]=id1;
     this.chess[id1].setPosition(x2,y2);
@@ -108,63 +106,32 @@ ChessGame.prototype.MoveChess=function(tempx,tempy){
     this.history.push(new Point(x2,y2));
     this.Draw();
 };
+//棋盘点击事件
+mycanvas.onclick=function(event){
+    if(game.LocalPlayer!==game.Player){
+        return;
+    }
+    if(game.STARTGAME){
+        game.stageClick(event);
+    }
+    else{
+        alert("游戏尚未开始");
+    }
+};
+//坐标转换
 ChessGame.prototype.stageClick=function(event){
-    console.log(event.offsetX,event.offsetY);
-    //目标处没棋子点击棋子
     var tempx,tempy;
-    //人人对弈
-    if(this.GameType===1){
-        tempx=parseInt(Math.floor((event.offsetX-this.border+this.rect/2)/this.rect));
-        tempy=parseInt(Math.floor((event.offsetY-this.border+this.rect/2)/this.rect));
-        console.log(tempx,tempy);
-        //防止超出范围
-        if(tempx>=this.xnum||tempy>=this.ynum||tempx<0||tempy<0){
-            return;
-        }
-        this.PlayGame(tempx,tempy);
-        this.OverStep();
+    tempx=parseInt(Math.floor((event.offsetX-this.border+this.rect/2)/this.rect));
+    tempy=parseInt(Math.floor((event.offsetY-this.border+this.rect/2)/this.rect));
+    //防止超出范围
+    if(tempx>=this.xnum||tempy>=this.ynum||tempx<0||tempy<0){
+        return;
     }
-    //人机对弈
-    else if(this.GameType===2 && this.LocalPlayer!==this.AIPlayer){
-        tempx=parseInt(Math.floor((event.offsetX-this.border+this.rect/2)/this.rect));
-        tempy=parseInt(Math.floor((event.offsetY-this.border+this.rect/2)/this.rect));
-        //防止超出范围
-        if(tempx>=this.xnum||tempy>=this.ynum||tempx<0||tempy<0){
-            return;
-        }
-        this.PlayGame(tempx,tempy);
-        this.OverStep();
-    }
+    this.PlayGame(tempx,tempy);
+    this.OverStep();
 };
-ChessGame.prototype.OverStep=function(){
-    if(this.IsStep){
-        this.AddHistory();
-        this.IsStep=false;
-        this.ObstacleFlag=false;
-        this.MapList.push(deepClone(this.Map));
-        if(game.Player===game.LocalPlayer){
-            SendData(this.history);//发送数据
-        }
-        this.historyList.push(this.history);
-        this.history=[];
-        this.LastChess=null;
-        if(this.GameOver()){
-            alert("比赛结束");
-        }
-        this.reversePlayer();//改变玩家角色
-    }
-};
-
-/**
- * @return {boolean}
- */
+//对棋盘的操作
 ChessGame.prototype.PlayGame=function(tempx,tempy) {
-    console.log(tempx,tempy);
-    console.log(this.Map);
-
-    // if (this.MapList.length <= 1 && this.LocalPlayer !== BLACKPLAYER) {
-    //     return
-    // }
     //首次选择棋子
     if (this.LastChess == null) {
         if (this.Map[tempx][tempy] >= 0) {//当前位置有棋子
@@ -177,14 +144,12 @@ ChessGame.prototype.PlayGame=function(tempx,tempy) {
                 this.LastChess.drawSelectedChess(ctx);
                 this.ChessArea(this.LastChess);
                 this.LastChess.showArea(ctx);
-                this.ObstacleFlag = false;
+                this.ObstacleFlag = false;//参数ObstacleFlag的值对苏拉卡尔塔棋无影响
             }
         }
-        // else if(this.LocalPlayer===this.AIPlayer){//AI棋子选择错误
-        //     console.log("AI棋子选择错误");
-        //     return false;
-        // }
-    } else {//之前选择过棋子
+    }
+    //之前选择过棋子
+    else {
         if (this.Map[tempx][tempy] >= 0) {//当前位置有棋子
             var c = this.chess[this.Map[tempx][tempy]];
             if (this.ObstacleFlag) {//棋子已完成走子过程，不能更改选中棋子
@@ -202,32 +167,35 @@ ChessGame.prototype.PlayGame=function(tempx,tempy) {
             }
         }
         else {//当前选择位置无棋子
-            if (this.ObstacleFlag) {//完成走子，置放障碍
-                if (this.IsAbleToPut(tempx, tempy)) {
-                    this.PutObstacle(tempx, tempy);
-                }
-                else {
-                    alert("当前位置不符合下棋规则");
-                }
-            } else {
-                if (this.IsAbleToMove(tempx, tempy)) {
-                    this.MoveChess(tempx, tempy);
-                    this.AddOperation();
-                }
-                else {
-                    alert("当前位置不符合下棋规则");
-                }
-            }
+            this.BlankOperation(tempx,tempy);
         }
     }
     this.OverStep();
 };
+//判断是否执行完全部过程
+ChessGame.prototype.OverStep=function(){
+    if(this.IsStep){
+        this.IsStep=false;
+        this.ObstacleFlag=false;
+        this.MapList.push(deepClone(this.Map));
+        if(game.Player===game.LocalPlayer){
+            SendData(this.history);//发送数据
+        }
+        this.historyList.push(this.history);
+        this.history=[];
+        this.LastChess=null;
+        if(this.GameOver()){
+            alert("比赛结束");
+        }
+        this.reversePlayer();//改变玩家角色
+    }
+};
+
+
 ChessGame.prototype.AIGame=function(data){
     console.log(data);
     var kw = data.kw;
-    console.log(kw);
     if(kw===0){//置放棋子
-        console.log('here');
         var pos1 = new Point();
         pos1.x=data.move.from[1];
         pos1.y=data.move.from[0];
@@ -243,33 +211,6 @@ ChessGame.prototype.AIGame=function(data){
         pos3.y = data.move.to[0];
         this.PlayGame(pos3.x,pos3.y);
     }
-}
-//初始化
-ChessGame.prototype.initChess=function(){
-    //子类重写
-};
-ChessGame.prototype.drawBoard=function(){
-    //子类重写
-};
-//判断是否符合走法
-/**
- * @return {boolean}
- */
-ChessGame.prototype. IsAbleToPut=function(firstchess,tempx,tempy){
-    return false;
-};
-//判断游戏是否结束
-ChessGame.prototype.GameOver=function(){
-    //子类重写
-};
-//目标位置有敌方棋子
-ChessGame.prototype.OpponentOperation=function (tempx,tempy) {
-    alert("当前位置有对方棋子");
-    //子类重写
-};
-//置放障碍
-ChessGame.prototype.PutObstacle=function (tempx,tempy) {
-    //子类重写
 };
 //判断是否越界
 /**
@@ -282,19 +223,35 @@ ChessGame.prototype.IsBorder=function(tempx,tempy){
         return false;
     }
 };
-ChessGame.prototype.AddOperation=function () {
 
+
+//初始化
+ChessGame.prototype.initChess=function(){
+};
+ChessGame.prototype.drawBoard=function(){
+};
+//判断是否符合走法
+/**
+ * @return {boolean}
+ */
+ChessGame.prototype. IsAbleToPut=function(firstchess,tempx,tempy){
+    return false;
+};
+//判断游戏是否结束
+ChessGame.prototype.GameOver=function(){
+};
+//目标位置有敌方棋子
+ChessGame.prototype.OpponentOperation=function (tempx,tempy) {
+    alert("当前位置有对方棋子");
+};
+ChessGame.prototype.BlankOperation=function (tempx,tempy) {
+    alert("当前位置为空白");
 };
 ChessGame.prototype.AddInitOperation=function () {
 };
 ChessGame.prototype.AddDrawOperation=function () {
-
 };
 ChessGame.prototype.ChessArea=function () {
-
-};
-ChessGame.prototype.AddHistory=function(){
-
 };
 //设置画布
 var mycanvas=document.getElementById("myCanvas");
@@ -305,19 +262,7 @@ mycanvas.height=600;
 function StopTime(){
     clearTimeout(game.time);
 }
-//棋盘点击事件
-mycanvas.onclick=function(event){
-    if(game.LocalPlayer!==game.Player){
-        return;
-    }
-    if(game.STARTGAME){
-        console.log("start game,start move");
-        game.stageClick(event);
-    }
-    else{
-        alert("游戏尚未开始");
-    }
-};
+
 /*
 深度拷贝的实现
 */

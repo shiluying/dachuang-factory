@@ -3,7 +3,6 @@ function setOrder(or) {
     order=or;
 }
 function InitGame(order){
-    console.log("所属方："+order);
     var btnVal=document.getElementById("startbtn");
     if (btnVal.value == "  Start Game  ") {
         if(order==='1'){
@@ -11,12 +10,7 @@ function InitGame(order){
         }else{
             game.Player=WHITEPLAYER;
         }
-        // setTitle = 'Please choose the color of the chess';
-        // setContents = 'Black means first hand, the other side chooses the color opposite to your persistence';
-        // setButton = '["Black","White"]';
-        // $(this).openWindow(setTitle, setContents, setButton);
         SendStart(order);
-        // btnVal.value = "  Stop Game  ";
     } else if (btnVal.value == "  Stop Game  ") {
         clearTimeout(game.time);
         btnVal.value = "Continue Game";
@@ -26,21 +20,11 @@ function InitGame(order){
         btnVal.value = "  Stop Game  ";
     }
 }
-function InitType() {
-    let setTitle;
-    let setContents;
-    let setButton;
-    setTitle = '选择比赛类型';
-    setContents = '请选择比赛类型';
-    setButton = '["人人对弈","人机对弈","AI对弈"]';
-    $(this).chooseType(setTitle, setContents, setButton);
-}
 
 //初始化游戏
 function StarGame(){
     game.STARTGAME=true;
     StartTime();
-
 }
 function StartTime(){
     clearTimeout(game.time);
@@ -93,16 +77,13 @@ function WithDraw(){
 }
 function GetBoards(){
     var data="";
-    console.log(game.historyList.length);
     for(var i=0;i<game.historyList.length;i++){
         var s="";
         var history = game.historyList[i];
         for(var j=0;j<history.length;j++){
             s=s+history[j].x+","+history[j].y+">>"
         }
-        console.log(s);
         data=data+s+"\r\n";
-
     }
     var file = new File([data], "borads.txt", { type: "text/plain;charset=utf-8" });
     saveAs(file);
