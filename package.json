@@ -10,7 +10,7 @@
     "electron": "^4.0.1"
   },
   "dependencies": {
-    "socket.io": "^2.2.0",
+    "socket.io": "^2.4.0",
     "soket.io": "0.0.1-security",
     "ws": "^7.2.0"
   }
